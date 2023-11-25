@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Spring HttpSession Sample</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<h1>Spring HttpSession Sample</h1>
+	<div>
+    	<span>Post Data: </span>
+		<span th:if="${now} != null" th:text="${now}"></span>
+
+	</div>
+	<br />
+	<div>
+		<p>フォーム入力情報</p>
+		<form method="post" action="formPost">
+			<span>name: </span>
+			<span th:if="${form} != null" th:text="${form.name}"></span>
+			<br />
+			<span>password: </span>
+			<span th:if="${form} != null" th:text="${form.password}"></span>
+			<br />
+		</form>
+	</div>
+	<div>
+		<p>セッション情報</p>
+		<span th:if="${sessionData} != null" th:text="${sessionData}"></span>
+		
+	</div>
+	<div>
+		<a href="/session">ページを遷移してセッション情報を確認</a><br>
+		<a href="/">back</a>
+	</div>
+
+</body>
+</html>

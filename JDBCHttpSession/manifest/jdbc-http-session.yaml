@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: jdbc-http-session
+  name: jdbc-http-session
+  namespace: jdbc-http-session
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: jdbc-http-session
+  template:
+    metadata:
+      labels:
+        app: jdbc-http-session
+    spec:
+      containers:
+      - image: ghcr.io/mochizuki875/jdbc-http-session:jdk17.0.5 
+        name: jdbc-http-session
+        # imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "1Gi"
+            cpu: "1"
+        env:
+        - name: SESSION_STORE
+          value: jdbc
+        - name: POSTGRES_URL
+          value: jdbc:postgresql://postgres.jdbc-http-session.svc:5432/postgres
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          value: postgres
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: jdbc-http-session
+  name: jdbc-http-session
+  namespace: jdbc-http-session
+spec:
+  selector:
+    app: jdbc-http-session
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jdbc-http-session-ingress
+  namespace: jdbc-http-session
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: jdbc-http-session.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: jdbc-http-session
+            port:
+              number: 8080

@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Spring HttpSession Sample</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<h1>Spring HttpSession Sample</h1>
+	<form th:action="@{/formPost}" method="post">
+
+        <div>
+            <label for="username">ユーザー</label>
+            <input type="text" name="name">
+        </div>
+        <div>
+            <label for="password">パスワード</label>
+            <input type="password" name="password">
+        </div>
+
+        <input type="submit" value="Login">
+    </form>
+</body>
+</html>

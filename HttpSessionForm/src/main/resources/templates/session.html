@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Spring HttpSession Sample</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<h1>Spring HttpSession Sample</h1>
+	<div>
+    	<span>Post Data: </span>
+		<span th:if="${now} != null" th:text="${now}"></span>
+
+	</div>
+	<br />
+	<div>
+		<p>セッション情報</p>
+		<span th:if="${sessionData} != null" th:text="${sessionData}"></span>
+		
+	</div>
+	<a href="/index">back</a>
+
+</body>
+</html>

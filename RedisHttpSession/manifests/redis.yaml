@@ -1,0 +1,112 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: redis
+  name: redis
+  namespace: redis-http-session
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:7.2.3
+        env:
+        - name: MASTER
+          value: "true"
+        ports:
+        - containerPort: 6379
+        resources:
+          limits:
+            cpu: "1"
+            memory: "1Gi"
+        volumeMounts:
+        - mountPath: /redis-master
+          name: config
+      # redis-exporter
+      - name: redis-exporter
+        image: oliver006/redis_exporter:v1.29.0-alpine
+        ports:
+        - containerPort: 9121   
+      volumes:
+        - name: config
+          configMap:
+            name: redis-config
+            items:
+            - key: redis-config
+              path: redis.conf
+
+
+# ---
+# apiVersion: v1
+# kind: Pod
+# metadata:
+#   name: redis
+#   namespace: redis-http-session
+#   labels:
+#     app: redis
+# spec:
+#   containers:
+#   - name: redis
+#     image: redis:7.2.3
+#     env:
+#     - name: MASTER
+#       value: "true"
+#     ports:
+#     - containerPort: 6379
+#     resources:
+#       limits:
+#         cpu: "1"
+#         memory: "1Gi"
+#     volumeMounts:
+#     - mountPath: /redis-master
+#       name: config
+#   # redis-exporter
+#   - name: redis-exporter
+#     image: oliver006/redis_exporter:v1.29.0-alpine
+#     ports:
+#     - containerPort: 9121   
+#   volumes:
+#     - name: config
+#       configMap:
+#         name: redis-config
+#         items:
+#         - key: redis-config
+#           path: redis.conf
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-config
+  namespace: redis-http-session
+data:
+  redis-config: |
+    # save 300 10
+    # dbfilename dump.rdb
+    # dir /data
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: redis-http-session
+spec:
+  selector:
+    app: redis
+  type: ClusterIP
+  ports:
+  - port: 6379
+    targetPort: 6379
+    name: redis
+  - port: 9121
+    targetPort: 9121
+    name: redis-exporter

@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: postgres
+  name: postgres
+  namespace: jdbc-http-session
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:16.1
+        env:
+        - name: POSTGRES_PASSWORD
+          value: postgres
+        ports:
+        - containerPort: 5432
+        resources:
+          limits:
+            cpu: "1"
+            memory: "1Gi"
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /var/lib/postgresql/data
+      # PostgreSQL Server Exporter
+      - name: postgres-exporter
+        image: quay.io/prometheuscommunity/postgres-exporter
+        env:
+        - name: DATA_SOURCE_NAME
+          value: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
+      volumes:
+      - name: postgres-data
+        hostPath:
+          path: /srv/postgres/data
+          type: DirectoryOrCreate
+
+
+# ---
+# apiVersion: v1
+# kind: Pod
+# metadata:
+#   name: postgres
+#   namespace: jdbc-http-session
+#   labels:
+#     app: postgres
+# spec:
+#   containers:
+#   - name: postgres
+#     image: postgres:16.1
+#     env:
+#     - name: POSTGRES_PASSWORD
+#       value: postgres
+#     ports:
+#     - containerPort: 5432
+#     resources:
+#       limits:
+#         cpu: "1"
+#         memory: "1Gi"
+#   #   volumeMounts:
+#   #   - name: postgres-data
+#   #     mountPath: /var/lib/postgresql/data
+
+#   # PostgreSQL Server Exporter
+#   - name: postgres-exporter
+#     image: quay.io/prometheuscommunity/postgres-exporter
+#     env:
+#     - name: DATA_SOURCE_NAME
+#       value: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
+
+#   # volumes:
+#   # - name: postgres-data
+#   #   hostPath:
+#   #     path: /srv/postgres/data
+#   #     type: DirectoryOrCreate
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: jdbc-http-session
+spec:
+  selector:
+    app: postgres
+  ports:
+  - port: 5432
+    targetPort: 5432
+    name: postgres
+  - port: 9187
+    targetPort: 9187
+    name: postgres-exporter
