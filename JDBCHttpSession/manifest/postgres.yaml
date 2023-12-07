@@ -27,20 +27,26 @@ spec:
           limits:
             cpu: "1"
             memory: "1Gi"
-        volumeMounts:
-        - name: postgres-data
-          mountPath: /var/lib/postgresql/data
+            # memory: "2Gi"
+        # volumeMounts:
+        # - name: postgres-data
+        #   mountPath: /var/lib/postgresql/data
       # PostgreSQL Server Exporter
       - name: postgres-exporter
         image: quay.io/prometheuscommunity/postgres-exporter
         env:
         - name: DATA_SOURCE_NAME
           value: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
-      volumes:
-      - name: postgres-data
-        hostPath:
-          path: /srv/postgres/data
-          type: DirectoryOrCreate
+      # volumes:
+      # - name: postgres-data
+      #   hostPath:
+      #     path: /srv/postgres/data
+      #     type: DirectoryOrCreate
+      # volumes:
+      # - name: postgres-data
+      #   emptyDir: 
+      #     medium: Memory
+
 
 
 # ---

@@ -16,7 +16,7 @@ spec:
         app: redis-http-session
     spec:
       containers:
-      - image: ghcr.io/mochizuki875/redis-http-session:jdk17.0.5 
+      - image: ghcr.io/mochizuki875/redis-http-session:redis7.0.5 
         name: redis-http-session
         # imagePullPolicy: Always
         resources:
